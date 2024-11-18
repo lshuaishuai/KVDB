@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # KVstorageBaseRaft-cpp
 
 本项目为：[【代码随想录知识星球】](https://www.programmercarl.com/other/project_fenbushi.html)项目分享-基于Raft的k-v存储数据库。 
@@ -120,3 +121,6 @@ raftCoreRun -n 3 -f test.conf
 </a>
 
 
+=======
+# KVDB
+>>>>>>> df600bd41c4b9eada86f5c541265757f9dc51674

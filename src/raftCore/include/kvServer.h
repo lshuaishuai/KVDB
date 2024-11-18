@@ -111,7 +111,9 @@ class KvServer : raftKVRpcProctoc::kvServerRpc {
     ar &m_lastRequestId;
   }
 
+  // 将类对象对应的数据输出到字符串中
   std::string getSnapshotData() {
+    // 将跳表数据序列化到字符串中
     m_serializedKVData = m_skipList.dump_file();
     std::stringstream ss;
     boost::archive::text_oarchive oa(ss);
@@ -120,6 +122,7 @@ class KvServer : raftKVRpcProctoc::kvServerRpc {
     return ss.str();
   }
 
+  // 将字符串中的数据反序列化为该类成员属性中
   void parseFromString(const std::string &str) {
     std::stringstream ss(str);
     boost::archive::text_iarchive ia(ss);

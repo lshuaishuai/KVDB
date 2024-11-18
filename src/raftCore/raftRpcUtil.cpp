@@ -9,8 +9,8 @@
 
 bool RaftRpcUtil::AppendEntries(raftRpcProctoc::AppendEntriesArgs *args, raftRpcProctoc::AppendEntriesReply *response) {
   MprpcController controller;
-  stub_->AppendEntries(&controller, args, response, nullptr);
-  return !controller.Failed();
+  stub_->AppendEntries(&controller, args, response, nullptr);  // 这里进入这个函数后就会调用mprpcchannel中的CallMethod方法
+  return !controller.Failed();   // 失败返回0
 }
 
 bool RaftRpcUtil::InstallSnapshot(raftRpcProctoc::InstallSnapshotRequest *args,

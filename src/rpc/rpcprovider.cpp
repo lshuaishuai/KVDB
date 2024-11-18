@@ -43,11 +43,11 @@ void RpcProvider::Run(int nodeIndex, short port) {
   //获取可用ip
   char *ipC;
   char hname[128];
-  struct hostent *hent;
-  gethostname(hname, sizeof(hname));
-  hent = gethostbyname(hname);
+  struct hostent *hent;   // struct hostent 是用于存储与主机名相关的信息的结构，包含了主机名、地址类型、地址列表等信息
+  gethostname(hname, sizeof(hname));  // 调用 gethostname() 函数获取当前主机的主机名
+  hent = gethostbyname(hname);  // 根据主机名获取了主机相关信息
   for (int i = 0; hent->h_addr_list[i]; i++) {
-    ipC = inet_ntoa(*(struct in_addr *)(hent->h_addr_list[i]));  // IP地址
+    ipC = inet_ntoa(*(struct in_addr *)(hent->h_addr_list[i]));  // IP地址 ipC 只包含了最后一个有效的 IP 地址字符串。
   }
   std::string ip = std::string(ipC);
   //    // 获取端口

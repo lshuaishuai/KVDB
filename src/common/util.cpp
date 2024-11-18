@@ -14,6 +14,7 @@ void myAssert(bool condition, std::string message) {
 
 std::chrono::_V2::system_clock::time_point now() { return std::chrono::high_resolution_clock::now(); }
 
+// 生成一个随机的选举超时时间，用于 Raft 协议中的选举过程
 std::chrono::milliseconds getRandomizedElectionTimeout() {
   std::random_device rd;
   std::mt19937 rng(rd());

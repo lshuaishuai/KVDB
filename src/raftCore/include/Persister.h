@@ -6,8 +6,12 @@
 #define SKIP_LIST_ON_RAFT_PERSISTER_H
 #include <fstream>
 #include <mutex>
+
+
+// Persister 类的主要功能是持久化（保存和读取）Raft 协议中的两个重要数据：Raft 状态（raftState） 和 快照（snapshot）
 class Persister {
  private:
+  // snapshot是由state得来的
   std::mutex m_mtx;
   std::string m_raftState;
   std::string m_snapshot;

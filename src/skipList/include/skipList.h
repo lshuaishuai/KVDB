@@ -1,9 +1,9 @@
+#pragma once
 //
 // Created by swx on 24-1-5.
 //
 
-#ifndef SKIPLIST_H
-#define SKIPLIST_H
+
 /* ************************************************************************
 > File Name:     skiplist.h
 > Author:        程序员Carl
@@ -40,6 +40,9 @@ class Node {
   void set_value(V);
 
   // Linear array to hold pointers to next node of different level
+  // forward 是一个指向指针数组的指针。它用于存储多个层级的指针，每个层级指向下一个节点。
+  // forward 数组的每个元素代表一个层级的指针，指向当前节点下一个节点
+  // 跳表每个元素虽然可能在多个层级，可是真实值存储一个节点，根据forward来找每个层级上的下一个节点
   Node<K, V> **forward;
 
   int node_level;
@@ -88,6 +91,7 @@ class SkipListDump {
 
   template <class Archive>
   void serialize(Archive &ar, const unsigned int version) {
+    // 将这两个成员变量（即键值对的序列）序列化或反序列化。
     ar &keyDumpVt_;
     ar &valDumpVt_;
   }
@@ -181,6 +185,7 @@ int SkipList<K, V>::insert_element(const K key, const V value) {
   memset(update, 0, sizeof(Node<K, V> *) * (_max_level + 1));
 
   // start form highest level of skip list
+  // 从较高的层级找比较快
   for (int i = _skip_list_level; i >= 0; i--) {
     while (current->forward[i] != NULL && current->forward[i]->get_key() < key) {
       current = current->forward[i];
@@ -216,6 +221,8 @@ int SkipList<K, V>::insert_element(const K key, const V value) {
     Node<K, V> *inserted_node = create_node(key, value, random_level);
 
     // insert node
+    // updata的0-random_level层的所有节点的下一个节点都是inserted_node
+    // inserted_node的前一个节点为上面找出来的updata的节点，也就是插入新节点位置的前一个节点
     for (int i = 0; i <= random_level; i++) {
       inserted_node->forward[i] = update[i]->forward[i];
       update[i]->forward[i] = inserted_node;
@@ -260,6 +267,8 @@ std::string SkipList<K, V>::dump_file() {
     node = node->forward[0];
   }
   std::stringstream ss;
+  // oa 是一个 text_oarchive 类型的对象，它可以将数据以文本的形式序列化。
+  // ss 是一个 std::stringstream，它是一个内存中的流，用来存储序列化后的数据。
   boost::archive::text_oarchive oa(ss);
   oa << dumper;
   return ss.str();
@@ -294,7 +303,9 @@ void SkipList<K, V>::load_file(const std::string &dumpStr) {
   SkipListDump<K, V> dumper;
   std::stringstream iss(dumpStr);
   boost::archive::text_iarchive ia(iss);
+  // 将iss流中的数据，反序列化到dumper中
   ia >> dumper;
+  // 相当于重新构建了一个跳表
   for (int i = 0; i < dumper.keyDumpVt_.size(); ++i) {
     insert_element(dumper.keyDumpVt_[i], dumper.keyDumpVt_[i]);
   }
@@ -306,6 +317,7 @@ int SkipList<K, V>::size() {
   return _element_count;
 }
 
+// 字符串应该为 "key:value" 的形式
 template <typename K, typename V>
 void SkipList<K, V>::get_key_value_from_string(const std::string &str, std::string *key, std::string *value) {
   if (!is_valid_string(str)) {
@@ -335,6 +347,7 @@ void SkipList<K, V>::delete_element(K key) {
   memset(update, 0, sizeof(Node<K, V> *) * (_max_level + 1));
 
   // start from highest level of skip list
+  // 找到要删除元素的前一个，由于其处在多个层，最多可能有_max_level层，所以将其保存在update中
   for (int i = _skip_list_level; i >= 0; i--) {
     while (current->forward[i] != NULL && current->forward[i]->get_key() < key) {
       current = current->forward[i];
@@ -342,6 +355,7 @@ void SkipList<K, V>::delete_element(K key) {
     update[i] = current;
   }
 
+  // current为要删除的节点
   current = current->forward[0];
   if (current != NULL && current->get_key() == key) {
     // start for lowest level and delete the current node of each level
@@ -438,6 +452,7 @@ SkipList<K, V>::SkipList(int max_level) {
   this->_element_count = 0;
 
   // create header node and initialize key and value to null
+  // 头节点不存储数据
   K k;
   V v;
   this->_header = new Node<K, V>(k, v, _max_level);
@@ -476,4 +491,3 @@ int SkipList<K, V>::get_random_level() {
   return k;
 };
 // vim: et tw=100 ts=4 sw=4 cc=120
-#endif  // SKIPLIST_H

@@ -4,7 +4,8 @@
 #include "Persister.h"
 #include "util.h"
 
-// todo:会涉及反复打开文件的操作，没有考虑如果文件出现问题会怎么办？？
+// todo:会涉及反复打开文件的操作，没有考虑如果文件出现问题会怎么办？？ 用 std::ofstream 将 Raft 状态 (raftstate) 和快照 (snapshot) 写入到本地文件中
+// 文件路径在构造时通过 me 参数指定，分别为 raftstatePersist<me>.txt 和 snapshotPersist<me>.txt
 void Persister::Save(const std::string raftstate, const std::string snapshot) {
   std::lock_guard<std::mutex> lg(m_mtx);
   clearRaftStateAndSnapshot();
@@ -66,16 +67,17 @@ Persister::Persister(const int me)
   /**
    * 检查文件状态并清空文件
    */
+  // 这段代码检查了文件是否能够打开，但没有做出更具体的处理，只是简单地记录一个错误信息。
   bool fileOpenFlag = true;
-  std::fstream file(m_raftStateFileName, std::ios::out | std::ios::trunc);
-  if (file.is_open()) {
-    file.close();
+  std::fstream file1(m_raftStateFileName, std::ios::out | std::ios::trunc);
+  if (file1.is_open()) {
+    file1.close();
   } else {
     fileOpenFlag = false;
   }
-  file = std::fstream(m_snapshotFileName, std::ios::out | std::ios::trunc);
-  if (file.is_open()) {
-    file.close();
+  std::fstream file2(m_snapshotFileName, std::ios::out | std::ios::trunc);
+  if (file2.is_open()) {
+    file2.close();
   } else {
     fileOpenFlag = false;
   }
